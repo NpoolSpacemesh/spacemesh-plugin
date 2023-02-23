@@ -16,10 +16,10 @@ import (
 	"github.com/spacemeshos/go-spacemesh/genvm/sdk/wallet"
 	tplWallet "github.com/spacemeshos/go-spacemesh/genvm/templates/wallet"
 
+	"github.com/NpoolSpacemesh/spacemesh-plugin/client"
+	"github.com/NpoolSpacemesh/spacemesh-plugin/util"
 	"github.com/spacemeshos/go-spacemesh/hash"
 	"github.com/spacemeshos/go-spacemesh/signing"
-	"spacemesh.com/plugin/client"
-	"spacemesh.com/plugin/util"
 )
 
 func NewAccount() (pri, pub, acc string) {
