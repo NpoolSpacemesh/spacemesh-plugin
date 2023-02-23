@@ -14,7 +14,7 @@ import (
 const DefaultGRPCServer = "localhost:9092"
 const DefaultSecureConnection = false
 
-type gRPCClient struct {
+type Client struct {
 	connection               *grpc.ClientConn
 	server                   string
 	secureConnection         bool
@@ -24,8 +24,8 @@ type gRPCClient struct {
 	transactionServiceClient apitypes.TransactionServiceClient
 }
 
-func NewGRPCClient(server string, secureConnection bool) *gRPCClient {
-	return &gRPCClient{
+func NewClient(server string, secureConnection bool) *Client {
+	return &Client{
 		nil,
 		server,
 		secureConnection,
@@ -36,7 +36,7 @@ func NewGRPCClient(server string, secureConnection bool) *gRPCClient {
 	}
 }
 
-func (c *gRPCClient) Connect() error {
+func (c *Client) Connect() error {
 	if c.connection != nil {
 		_ = c.connection.Close()
 	}
@@ -59,7 +59,7 @@ func (c *gRPCClient) Connect() error {
 }
 
 // dial is a secure tls dialing helper
-func (c *gRPCClient) dial(address string) (*grpc.ClientConn, error) {
+func (c *Client) dial(address string) (*grpc.ClientConn, error) {
 	dialTime := 60 * time.Second
 	ctx, cancel := context.WithTimeout(context.Background(), dialTime)
 	defer cancel()
@@ -83,7 +83,7 @@ func (c *gRPCClient) dial(address string) (*grpc.ClientConn, error) {
 	return cc, nil
 }
 
-func (c *gRPCClient) Close() error {
+func (c *Client) Close() error {
 	if c.connection != nil {
 		return c.connection.Close()
 	}
@@ -91,7 +91,7 @@ func (c *gRPCClient) Close() error {
 }
 
 // ServerInfo returns basic api server and connection info
-func (c *gRPCClient) ServerInfo() string {
+func (c *Client) ServerInfo() string {
 	s := c.server + " (GRPC API 1.1)"
 	if c.secureConnection {
 		s += ". Secure Connection."
@@ -104,14 +104,14 @@ func (c *gRPCClient) ServerInfo() string {
 
 //// services clients
 
-func (c *gRPCClient) getNodeServiceClient() apitypes.NodeServiceClient {
+func (c *Client) getNodeServiceClient() apitypes.NodeServiceClient {
 	if c.nodeServiceClient == nil {
 		c.nodeServiceClient = apitypes.NewNodeServiceClient(c.connection)
 	}
 	return c.nodeServiceClient
 }
 
-func (c *gRPCClient) getGlobalStateServiceClient() apitypes.GlobalStateServiceClient {
+func (c *Client) getGlobalStateServiceClient() apitypes.GlobalStateServiceClient {
 	if c.globalStateServiceClient == nil {
 		c.globalStateServiceClient = apitypes.NewGlobalStateServiceClient(c.connection)
 	}
@@ -119,14 +119,14 @@ func (c *gRPCClient) getGlobalStateServiceClient() apitypes.GlobalStateServiceCl
 
 }
 
-func (c *gRPCClient) getTransactionServiceClient() apitypes.TransactionServiceClient {
+func (c *Client) getTransactionServiceClient() apitypes.TransactionServiceClient {
 	if c.transactionServiceClient == nil {
 		c.transactionServiceClient = apitypes.NewTransactionServiceClient(c.connection)
 	}
 	return c.transactionServiceClient
 }
 
-func (c *gRPCClient) getMeshServiceClient() apitypes.MeshServiceClient {
+func (c *Client) getMeshServiceClient() apitypes.MeshServiceClient {
 	if c.meshServiceClient == nil {
 		c.meshServiceClient = apitypes.NewMeshServiceClient(c.connection)
 	}

@@ -16,7 +16,7 @@ type NodeInfo struct {
 // Echo is a basic api sanity test. It verifies that the client can connect to
 // the node service and get a response from it to an echo request.
 // todo: change this to api health-check service as node service might not be available
-func (c *gRPCClient) Echo() error {
+func (c *Client) Echo() error {
 	service := c.getNodeServiceClient()
 	const msg = "hello spacemesh"
 	resp, err := service.Echo(context.Background(), &apitypes.EchoRequest{
@@ -34,7 +34,7 @@ func (c *gRPCClient) Echo() error {
 }
 
 // NodeInfo returns static node info such as build, version and api server url
-func (c *gRPCClient) NodeInfo() (*NodeInfo, error) {
+func (c *Client) NodeInfo() (*NodeInfo, error) {
 	info := &NodeInfo{}
 	s := c.getNodeServiceClient()
 	resp, err := s.Version(context.Background(), &empty.Empty{})
@@ -53,7 +53,7 @@ func (c *gRPCClient) NodeInfo() (*NodeInfo, error) {
 }
 
 // NodeStatus returns dynamic node status such as sync status and number of connected peers
-func (c *gRPCClient) NodeStatus() (*apitypes.NodeStatus, error) {
+func (c *Client) NodeStatus() (*apitypes.NodeStatus, error) {
 	s := c.getNodeServiceClient()
 	resp, err := s.Status(context.Background(), &apitypes.StatusRequest{})
 	if err != nil {

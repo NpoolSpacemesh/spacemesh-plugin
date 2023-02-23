@@ -7,7 +7,7 @@ import (
 )
 
 // GlobalStateHash returns the current global state hash
-func (c *gRPCClient) GlobalStateHash() (*apitypes.GlobalStateHash, error) {
+func (c *Client) GlobalStateHash() (*apitypes.GlobalStateHash, error) {
 	gsc := c.getGlobalStateServiceClient()
 	if resp, err := gsc.GlobalStateHash(context.Background(), &apitypes.GlobalStateHashRequest{}); err != nil {
 		return nil, err
@@ -17,7 +17,7 @@ func (c *gRPCClient) GlobalStateHash() (*apitypes.GlobalStateHash, error) {
 }
 
 // AccountState returns basic account data such as balance and nonce from the global state
-func (c *gRPCClient) AccountState(address apitypes.AccountId) (*apitypes.Account, error) {
+func (c *Client) AccountState(address apitypes.AccountId) (*apitypes.Account, error) {
 	gsc := c.getGlobalStateServiceClient()
 	resp, err := gsc.Account(context.Background(), &apitypes.AccountRequest{
 		AccountId: &address})

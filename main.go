@@ -114,7 +114,7 @@ func spawn() {
 	// fmt.Println(pubStr)
 	// fmt.Println(stestStr)
 
-	client := client.NewGRPCClient("172.16.3.90:9092", false)
+	client := client.NewClient("172.16.3.90:9092", false)
 	err = client.Connect()
 
 	fmt.Println(2, err)
@@ -158,7 +158,7 @@ func spend() {
 	// fmt.Println(pubStr)
 	// fmt.Println(stestStr)
 
-	client := client.NewGRPCClient("172.16.3.90:9092", false)
+	client := client.NewClient("172.16.3.90:9092", false)
 	err = client.Connect()
 
 	fmt.Println(2, err)

@@ -7,7 +7,7 @@ import (
 )
 
 // GetMeshTransactions returns the MeshTransactions on the mesh to or from an address.
-func (c *gRPCClient) GetGenesisID() ([]byte, error) {
+func (c *Client) GetGenesisID() ([]byte, error) {
 	ms := c.getMeshServiceClient()
 	resp, err := ms.GenesisID(context.Background(), &apitypes.GenesisIDRequest{})
 	if err != nil {
