@@ -2,41 +2,28 @@ package main
 
 import (
 	"bytes"
+
 	// "crypto/ed25519"
+
+	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 
 	xdr "github.com/davecgh/go-xdr/xdr2"
-	"github.com/spacemeshos/ed25519"
+	v1 "github.com/spacemeshos/api/release/go/spacemesh/v1"
 	"github.com/spacemeshos/go-scale"
-	"github.com/spacemeshos/go-spacemesh/codec"
 	"github.com/spacemeshos/go-spacemesh/common/types"
 	"github.com/spacemeshos/go-spacemesh/genvm/core"
 	"github.com/spacemeshos/go-spacemesh/genvm/sdk"
 	"github.com/spacemeshos/go-spacemesh/genvm/sdk/wallet"
-	tplWallet "github.com/spacemeshos/go-spacemesh/genvm/templates/wallet"
 
+	tmpWallet "github.com/spacemeshos/go-spacemesh/genvm/templates/wallet"
+
+	smAccount "github.com/NpoolSpacemesh/spacemesh-plugin/account"
 	"github.com/NpoolSpacemesh/spacemesh-plugin/client"
 	"github.com/NpoolSpacemesh/spacemesh-plugin/util"
-	"github.com/spacemeshos/go-spacemesh/hash"
 	"github.com/spacemeshos/go-spacemesh/signing"
 )
-
-func NewAccount() (pri, pub, acc string) {
-	signer, err := signing.NewEdSigner()
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	// just use in testnet
-	types.DefaultTestAddressConfig()
-
-	pubStr := signer.PublicKey().String()
-	priStr := hex.EncodeToString(signer.PrivateKey())
-	accStr := types.GenerateAddress([]byte(pubStr)).String()
-
-	return priStr, pubStr, accStr
-}
 
 func NewEdSignerByPriStr(priStr string) (*signing.EdSigner, error) {
 	priBytes, err := hex.DecodeString(priStr)
@@ -95,102 +82,112 @@ func byteArrToBody(txs []byte) (body []byte) {
 }
 
 func main() {
-	spawn()
+	// getTransaction()
+	// justTx()
+	// time.Sleep(2 * time.Second)
+	// justSpawn()
+	// testAcc()
+	tttt()
 }
 
-func spawn() {
-	// account()
-	priStr := "eadcdac9cf65a2d5e7899ab2090dbb216ce06653255a42075d8f5c5c147e591407b46e6f13edb93757be7df38c72b945d5f7904f31aaff6737b84b2a8a2a58ee"
-	// pubStr := "07b46e6f13edb93757be7df38c72b945d5f7904f31aaff6737b84b2a8a2a58ee"
-	// stestStr := "stest1qqqqqqrxvcmrwvehvgurgc3jvyuxzvnpx5ux2eghq7crd"
+func tttt() {
 	types.DefaultTestAddressConfig()
+	types.DefaultAddressConfig().NetworkHRP = smAccount.MainNet
 
-	signer, err := NewEdSignerByPriStr(priStr)
-	fmt.Println(1, err)
-
-	// pubStr := signer.PublicKey().String()
-	// stestStr := types.GenerateAddress([]byte(pubStr)).String()
-	// fmt.Println(priStr)
-	// fmt.Println(pubStr)
-	// fmt.Println(stestStr)
-
-	client := client.NewClient("172.16.3.90:9092", false)
-	err = client.Connect()
-
-	fmt.Println(2, err)
-	// fmt.Println(client.AccountState(v1.AccountId{Address: "stest1qqqqqqq28n6fw97jclu3tna6syxxy4elga2jtqgrf94zd"}))
-
-	tx := &types.Transaction{TxHeader: &types.TxHeader{}}
-	tx.Principal = wallet.Address(signer.PublicKey().Bytes())
-	args := tplWallet.SpawnArguments{}
-	copy(args.PublicKey[:], signer.PublicKey().Bytes())
-	payload := core.Payload{}
-	payload.Nonce = 0
-	payload.GasPrice = 0
 	public := &core.PublicKey{}
-	copy(public[:], signer.PublicKey().Bytes())
-	principal := core.ComputePrincipal(tplWallet.TemplateAddress, public)
-	_tx := encode(&sdk.TxVersion, &principal, &sdk.MethodSpawn, &tplWallet.TemplateAddress, &payload, &args)
+
+	fmt.Println(core.ComputePrincipal(tmpWallet.TemplateAddress, public).String())
+	fmt.Println(types.GenerateAddress([]byte("ssss")).String())
+
+}
+
+func testAcc() {
+	acc, _ := smAccount.CreateAccount(smAccount.TestNet)
+	fmt.Println(util.PrettyStruct(acc))
+}
+
+func justSpawn() {
+	types.DefaultTestAddressConfig()
+	client := client.NewClient("172.16.3.90:9092", false)
+	err := client.Connect()
+	fmt.Println(1, err)
 
 	genesisID, err := client.GetGenesisID()
-	hh := hash.Sum(genesisID[:], _tx)
-	sig := ed25519.Sign(signer.PrivateKey(), hh[:])
-	tx.RawTx = types.NewRawTx(append(_tx, sig...))
-	// serializedTx, err := codec.Encode(tx)
-	txState, err := client.SubmitCoinTransaction(tx.Raw)
+	fmt.Println(2, genesisID, err)
 
-	fmt.Println(util.PrettyStruct(txState), err)
-}
-
-func spend() {
-	// account()
-	priStr := "eadcdac9cf65a2d5e7899ab2090dbb216ce06653255a42075d8f5c5c147e591407b46e6f13edb93757be7df38c72b945d5f7904f31aaff6737b84b2a8a2a58ee"
-	// pubStr := "07b46e6f13edb93757be7df38c72b945d5f7904f31aaff6737b84b2a8a2a58ee"
-	// stestStr := "stest1qqqqqqrxvcmrwvehvgurgc3jvyuxzvnpx5ux2eghq7crd"
+	priStr := "e0aef1ce781f28ed8a88f5a3fd87e4ffe399f3750b3fee640e2606c5e2922217f7d6c5e814c89faf8a2866e65000f31253f5c42568ca3cf4f0c6e70cbc878559"
+	// pubStr := "f7d6c5e814c89faf8a2866e65000f31253f5c42568ca3cf4f0c6e70cbc878559"
+	// stestStr := "stest1qqqqqqru6pcet8crur4qw52ac73w3mamj0mk0vqu5zg3w"
 	types.DefaultTestAddressConfig()
 
 	signer, err := NewEdSignerByPriStr(priStr)
-	fmt.Println(1, err)
-
-	// pubStr := signer.PublicKey().String()
-	// stestStr := types.GenerateAddress([]byte(pubStr)).String()
-	// fmt.Println(priStr)
-	// fmt.Println(pubStr)
-	// fmt.Println(stestStr)
-
-	client := client.NewClient("172.16.3.90:9092", false)
-	err = client.Connect()
-
-	fmt.Println(2, err)
-	// fmt.Println(client.AccountState(v1.AccountId{Address: "stest1qqqqqqq28n6fw97jclu3tna6syxxy4elga2jtqgrf94zd"}))
-
-	to := "stest1qqqqqqxdwamxnf80v5qsfgkntjqgx5auxxteu7scd4txz"
-	toAddr, err := types.StringToAddress(to)
 	fmt.Println(3, err)
 
-	spawnargs := tplWallet.SpawnArguments{}
-	copy(spawnargs.PublicKey[:], signer.PublicKey().PublicKey)
-	principal := core.ComputePrincipal(tplWallet.TemplateAddress, &spawnargs)
+	_genesisID := types.EmptyLayerHash
+	_genesisID.SetBytes(genesisID)
+	h20 := types.Hash20{}
+	copy(h20[:], _genesisID[12:])
 
-	payload := core.Payload{}
-	payload.GasPrice = 1
-	payload.Nonce = 0
+	rawTx := types.NewRawTx(wallet.SelfSpawn(signer.PrivateKey(), 0, sdk.WithGenesisID(h20), sdk.WithGasPrice(2)))
 
-	args := tplWallet.SpendArguments{}
-	args.Destination = toAddr
-	args.Amount = 1000000
+	txState, err := client.SubmitCoinTransaction(rawTx.Raw)
+	fmt.Println(util.PrettyStruct(txState), err)
+}
+
+func justTx() {
+	types.DefaultTestAddressConfig()
+	client := client.NewClient("172.16.3.90:9092", false)
+	err := client.Connect()
+	fmt.Println(1, err)
 
 	genesisID, err := client.GetGenesisID()
-	tx := &types.Transaction{TxHeader: &types.TxHeader{}}
-	_tx := encode(&sdk.TxVersion, &principal, &sdk.MethodSpend, &payload, &args)
-	hh := hash.Sum(genesisID[:], _tx)
-	sig := ed25519.Sign(signer.PrivateKey(), hh[:])
-	_tx = append(_tx, sig...)
-	tx.RawTx = types.NewRawTx(_tx)
-	tx.MaxSpend = 1
+	fmt.Println(2, genesisID, err)
 
-	serializedTx, err := codec.Encode(tx)
-	txState, err := client.SubmitCoinTransaction(serializedTx)
+	priStr := "e0aef1ce781f28ed8a88f5a3fd87e4ffe399f3750b3fee640e2606c5e2922217f7d6c5e814c89faf8a2866e65000f31253f5c42568ca3cf4f0c6e70cbc878559"
+	// pubStr := "f7d6c5e814c89faf8a2866e65000f31253f5c42568ca3cf4f0c6e70cbc878559"
+	stestStr := "stest1qqqqqqru6pcet8crur4qw52ac73w3mamj0mk0vqu5zg3w"
+	toStr := "stest1qqqqqqx5xtqgy44pgeweeya02yszawqhc0w9ulqagjfge"
+	toAddr, err := types.StringToAddress(toStr)
+	fmt.Println(2, toAddr, err)
 
+	types.DefaultTestAddressConfig()
+
+	signer, err := NewEdSignerByPriStr(priStr)
+
+	fmt.Println(3, err)
+	_genesisID := types.EmptyLayerHash
+	_genesisID.SetBytes(genesisID)
+	h20 := types.Hash20{}
+	copy(h20[:], _genesisID[12:])
+
+	acc, err := client.AccountState(v1.AccountId{Address: stestStr})
+	fmt.Println(4, acc, err)
+
+	rawTx := types.NewRawTx(wallet.Spend(signer.PrivateKey(), toAddr, 100, 1, sdk.WithGenesisID(h20), sdk.WithGasPrice(2)))
+
+	txState, err := client.SubmitCoinTransaction(rawTx.Raw)
 	fmt.Println(util.PrettyStruct(txState), err)
+}
+
+func getTransaction() {
+	client := client.NewClient("172.16.3.90:9092", false)
+	err := client.Connect()
+	fmt.Println(1, err)
+	// txID := "0x7eaa2bd72608d438210d3df3dfb4dd02ed5b0b74385098691b036f9e412faaca"
+	// _txID := types.HexToHash32(txID)
+	_txID, err := base64.StdEncoding.DecodeString("LCy3zlmBZoJSpme/OolSk0WF8+ypzP8I+EpbwHxQ1YE=")
+	// _txID, err := base64.StdEncoding.DecodeString("IUdo9KDVmzf0JdOKsatfO6aEpcB99xmkdyT7NmG3iqM=")
+	fmt.Println(2.5, err)
+	txState, tx, err := client.TransactionState(_txID[:], true)
+	fmt.Println(2, err)
+	// fmt.Println(base64.StdEncoding.EncodeToString(txState.Id.GetId()))
+
+	// hhhash := types.EmptyLayerHash
+	// hhhash.SetBytes(txState.Id.GetId())
+	// fmt.Println(hhhash.String())
+	fmt.Println(3, util.PrettyStruct(txState))
+	fmt.Println(4, util.PrettyStruct(tx))
+
+	// fmt.Println(client.AccountState(v1.AccountId{Address: "stest1qqqqqq8ahm02zlsyvl9n2era9h9jlhy9hmrkfnqjyfrj7"}))
+
 }
