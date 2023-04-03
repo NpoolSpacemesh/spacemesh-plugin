@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"errors"
 
 	apitypes "github.com/spacemeshos/api/release/go/spacemesh/v1"
 )
@@ -30,6 +31,12 @@ func (c *Client) TransactionState(txId []byte, includeTx bool) (*apitypes.Transa
 
 	if err != nil {
 		return nil, nil, err
+	}
+	if resp.TransactionsState == nil || len(resp.TransactionsState) == 0 {
+		return nil, nil, errors.New("not get transaction state, please retry")
+	}
+	if resp.Transactions == nil || len(resp.TransactionsState) == 0 {
+		return nil, nil, errors.New("not get Transactions, please retry")
 	}
 	return resp.TransactionsState[0], resp.Transactions[0], nil
 }
