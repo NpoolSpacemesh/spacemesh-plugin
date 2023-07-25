@@ -12,23 +12,23 @@ func TestAccount(t *testing.T) {
 	pubStr := "f7d6c5e814c89faf8a2866e65000f31253f5c42568ca3cf4f0c6e70cbc878559"
 	stestStr := "stest1qqqqqqru6pcet8crur4qw52ac73w3mamj0mk0vqu5zg3w"
 
-	acc, err := CreateAccountFromHexPri(priStr, TestNet)
+	acc, err := CreateAccountFromHexPri(priStr)
 	if !assert.Nil(t, err) {
 		return
 	}
 	assert.Equal(t, acc.Pub, pubStr)
 	assert.Equal(t, acc.Pri, priStr)
-	assert.Equal(t, acc.Principal, stestStr)
+	assert.Equal(t, acc.GetAddress(TestNet), stestStr)
 
 	acc1, err := CreateAccount(TestNet)
 	if !assert.Nil(t, err) {
 		return
 	}
-	assert.Equal(t, true, strings.HasPrefix(acc1.Principal, TestNet))
+	assert.Equal(t, true, strings.HasPrefix(acc1.GetAddress(TestNet).String(), TestNet))
 
 	acc2, err := CreateAccount(MainNet)
 	if !assert.Nil(t, err) {
 		return
 	}
-	assert.Equal(t, true, strings.HasPrefix(acc2.Principal, MainNet))
+	assert.Equal(t, true, strings.HasPrefix(acc2.GetAddress(TestNet).String(), MainNet))
 }
