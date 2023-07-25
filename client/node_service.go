@@ -16,10 +16,6 @@ type NodeInfo struct {
 	FirstGenesis     uint32
 	EffectiveGenesis uint32
 	EpochSize        uint32
-	// "hrp": "standalone",
-	// "first_genesis": 19,
-	// "effective_genesis": 19,
-	// "epoch_size": 10
 }
 
 // Echo is a basic api sanity test. It verifies that the client can connect to

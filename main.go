@@ -20,18 +20,20 @@ import (
 )
 
 const (
-	endpoint    = "172.16.3.90:10092"
-	endpointNet = account.StandaloneNet
+	endpoint    = "172.16.3.90:9092"
+	endpointNet = account.StandaloneHRP
 )
 
 var (
 	fromPriStr = "e0aef1ce781f28ed8a88f5a3fd87e4ffe399f3750b3fee640e2606c5e2922217f7d6c5e814c89faf8a2866e65000f31253f5c42568ca3cf4f0c6e70cbc878559"
 	// fromPubStr := "f7d6c5e814c89faf8a2866e65000f31253f5c42568ca3cf4f0c6e70cbc878559"
-	fromAddressStandaloneStr = "standalone1qqqqqqru6pcet8crur4qw52ac73w3mamj0mk0vq0qxtem"
+	fromAddressStestStr      = "standalone1qqqqqqru6pcet8crur4qw52ac73w3mamj0mk0vq0qxtem"
+	fromAddressStandaloneStr = "stest1qqqqqqru6pcet8crur4qw52ac73w3mamj0mk0vqu5zg3w"
 
 	toPriStr = "01c6f1db4dcbf1b900cb3ff0411a1cf4b1279f95bf33103a01996e1be1d7754f09815bea25c2c74754b3438e8217da3c6799e13e9e1cedba6e7f30e079269ca4"
 	// toPubStr := "09815bea25c2c74754b3438e8217da3c6799e13e9e1cedba6e7f30e079269ca4"
 	toAddressStandaloneStr = "standalone1qqqqqqx5xtqgy44pgeweeya02yszawqhc0w9ulqwuk2qv"
+	toAddressStestStr      = "stest1qqqqqqx5xtqgy44pgeweeya02yszawqhc0w9ulqagjfge"
 
 	ctx = context.Background()
 )
@@ -62,9 +64,9 @@ func main() {
 	// fmt.Println(h32.Hex(), err)
 
 	// time.Sleep(2 * time.Second)
-	// justSpawn()
+	justSpawn()
 	// testAcc()
-	testAcc()
+	// testAcc()
 }
 
 func tttt() {
@@ -94,7 +96,7 @@ func justSpawn() {
 	genesisID, err := client.GetGenesisID(ctx)
 	fmt.Println(2, genesisID, err)
 
-	signer, err := NewEdSignerByPriStr(fromPriStr)
+	signer, err := NewEdSignerByPriStr(toPriStr)
 	fmt.Println(3, err)
 
 	_genesisID := types.EmptyLayerHash

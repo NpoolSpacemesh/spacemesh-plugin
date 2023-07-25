@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	MainNet       = "sm"
-	TestNet       = "stest"
-	StandaloneNet = "standalone"
+	MainHRP       = "sm"
+	TestHRP       = "stest"
+	StandaloneHRP = "standalone"
 )
 
 type Account struct {
@@ -24,7 +24,7 @@ type Account struct {
 	signer *signing.EdSigner
 }
 
-func CreateAccount(net string) (*Account, error) {
+func CreateAccount() (*Account, error) {
 	signer, err := signing.NewEdSigner()
 	if err != nil {
 		return nil, err
