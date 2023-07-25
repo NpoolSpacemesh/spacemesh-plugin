@@ -36,7 +36,7 @@ func NewClient(server string, secureConnection bool) *Client {
 	}
 }
 
-func (c *Client) Connect() error {
+func (c *Client) Connect(ctx context.Context) error {
 	if c.connection != nil {
 		_ = c.connection.Close()
 	}
@@ -48,7 +48,7 @@ func (c *Client) Connect() error {
 		conn, err = grpc.Dial(c.server, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else {
 		// secure connection without client cert or server cert validation
-		conn, err = c.dial(c.server)
+		conn, err = c.dial(ctx, c.server)
 	}
 
 	if err != nil {
@@ -59,9 +59,9 @@ func (c *Client) Connect() error {
 }
 
 // dial is a secure tls dialing helper
-func (c *Client) dial(address string) (*grpc.ClientConn, error) {
+func (c *Client) dial(ctx context.Context, address string) (*grpc.ClientConn, error) {
 	dialTime := 60 * time.Second
-	ctx, cancel := context.WithTimeout(context.Background(), dialTime)
+	ctx, cancel := context.WithTimeout(ctx, dialTime)
 	defer cancel()
 
 	// todo: set release version in user agent

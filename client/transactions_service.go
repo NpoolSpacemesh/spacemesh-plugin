@@ -8,9 +8,9 @@ import (
 )
 
 // SubmitCoinTransaction submits a signed binary transaction to the node.
-func (c *Client) SubmitCoinTransaction(tx []byte) (*apitypes.TransactionState, error) {
+func (c *Client) SubmitCoinTransaction(ctx context.Context, tx []byte) (*apitypes.TransactionState, error) {
 	s := c.getTransactionServiceClient()
-	resp, err := s.SubmitTransaction(context.Background(), &apitypes.SubmitTransactionRequest{Transaction: tx})
+	resp, err := s.SubmitTransaction(ctx, &apitypes.SubmitTransactionRequest{Transaction: tx})
 	if err != nil {
 		return nil, err
 	}
@@ -19,12 +19,12 @@ func (c *Client) SubmitCoinTransaction(tx []byte) (*apitypes.TransactionState, e
 }
 
 // TransactionState returns the state and optionally the transaction for a single transaction based on tx id
-func (c *Client) TransactionState(txId []byte, includeTx bool) (*apitypes.TransactionState, *apitypes.Transaction, error) {
+func (c *Client) TransactionState(ctx context.Context, txId []byte, includeTx bool) (*apitypes.TransactionState, *apitypes.Transaction, error) {
 	s := c.getTransactionServiceClient()
 	ids := make([]*apitypes.TransactionId, 0)
 	ids = append(ids, &apitypes.TransactionId{Id: txId})
 
-	resp, err := s.TransactionsState(context.Background(), &apitypes.TransactionsStateRequest{
+	resp, err := s.TransactionsState(ctx, &apitypes.TransactionsStateRequest{
 		TransactionId:       ids,
 		IncludeTransactions: includeTx,
 	})

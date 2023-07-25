@@ -4,6 +4,7 @@ import (
 
 	// "crypto/ed25519"
 
+	"context"
 	"encoding/hex"
 	"fmt"
 
@@ -31,6 +32,8 @@ var (
 	toPriStr = "01c6f1db4dcbf1b900cb3ff0411a1cf4b1279f95bf33103a01996e1be1d7754f09815bea25c2c74754b3438e8217da3c6799e13e9e1cedba6e7f30e079269ca4"
 	// toPubStr := "09815bea25c2c74754b3438e8217da3c6799e13e9e1cedba6e7f30e079269ca4"
 	toAddressStandaloneStr = "standalone1qqqqqqx5xtqgy44pgeweeya02yszawqhc0w9ulqwuk2qv"
+
+	ctx = context.Background()
 )
 
 func NewEdSignerByPriStr(priStr string) (*signing.EdSigner, error) {
@@ -76,19 +79,19 @@ func tttt() {
 
 func testAcc() {
 	client := client.NewClient(endpoint, false)
-	err := client.Connect()
+	err := client.Connect(ctx)
 	fmt.Println(1, err)
-	acc, err := client.AccountState(v1.AccountId{Address: fromAddressStandaloneStr})
+	acc, err := client.AccountState(ctx, v1.AccountId{Address: fromAddressStandaloneStr})
 	fmt.Println(2, acc, err)
 
 }
 
 func justSpawn() {
 	client := client.NewClient(endpoint, false)
-	err := client.Connect()
+	err := client.Connect(ctx)
 	fmt.Println(1, err)
 
-	genesisID, err := client.GetGenesisID()
+	genesisID, err := client.GetGenesisID(ctx)
 	fmt.Println(2, genesisID, err)
 
 	signer, err := NewEdSignerByPriStr(fromPriStr)
@@ -101,13 +104,13 @@ func justSpawn() {
 
 	rawTx := types.NewRawTx(wallet.SelfSpawn(signer.PrivateKey(), 0, sdk.WithGenesisID(h20), sdk.WithGasPrice(2)))
 
-	txState, err := client.SubmitCoinTransaction(rawTx.Raw)
+	txState, err := client.SubmitCoinTransaction(ctx, rawTx.Raw)
 	fmt.Println(util.PrettyStruct(txState), err)
 }
 
 func justTx() {
 	client := client.NewClient(endpoint, false)
-	err := client.Connect()
+	err := client.Connect(ctx)
 	fmt.Println(1, err)
 
 	// pepare to account
@@ -120,7 +123,7 @@ func justTx() {
 	fmt.Println(4, err)
 
 	// pepare genessisID
-	genesisID, err := client.GetGenesisID()
+	genesisID, err := client.GetGenesisID(ctx)
 	fmt.Println(5, genesisID, err)
 	_genesisID := types.EmptyLayerHash
 	_genesisID.SetBytes(genesisID)
@@ -131,11 +134,11 @@ func justTx() {
 	rawTx := types.NewRawTx(wallet.Spend(fromSigner.PrivateKey(), toAddr, 300, 2, sdk.WithGenesisID(h20), sdk.WithGasPrice(2)))
 
 	// submit tx
-	txState, err := client.SubmitCoinTransaction(rawTx.Raw)
+	txState, err := client.SubmitCoinTransaction(ctx, rawTx.Raw)
 	fmt.Println(6, util.PrettyStruct(txState), err)
 
 	// get tx state
-	txState, tx, err := client.TransactionState(txState.Id.GetId(), true)
+	txState, tx, err := client.TransactionState(ctx, txState.Id.GetId(), true)
 	fmt.Println(7, util.PrettyStruct(txState))
 	fmt.Println(8, util.PrettyStruct(tx))
 	fmt.Println(9, err)
@@ -146,7 +149,7 @@ func justTx() {
 
 func getTransaction() {
 	client := client.NewClient(endpoint, false)
-	err := client.Connect()
+	err := client.Connect(ctx)
 	fmt.Println(1, err)
 	txID := "0x6d81b1871c09f73b8856475230a00c33cc8929f7c479e69c54c52f575f95f02e"
 	_txID := types.HexToHash32(txID)
@@ -154,7 +157,7 @@ func getTransaction() {
 	// _txID, err := base64.StdEncoding.DecodeString("dtTHPZJo7mqdlCgoJ1x9j1Bk4o+V7qDpKbqqrJvydJQ=")
 	// _txID, err := base64.StdEncoding.DecodeString("7+XMPKGhPuQ1gG8L+TraFSa0/XXMp1ln8j3VzkGwiDA=")
 	fmt.Println(2.5, err)
-	txState, tx, err := client.TransactionState(_txID[:], true)
+	txState, tx, err := client.TransactionState(ctx, _txID[:], true)
 	fmt.Println(2, err)
 	// fmt.Println(base64.StdEncoding.EncodeToString(txState.Id.GetId()))
 
