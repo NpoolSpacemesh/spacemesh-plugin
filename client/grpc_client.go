@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/fullstorydev/grpcurl"
-	"google.golang.org/grpc/credentials"
 
 	apitypes "github.com/spacemeshos/api/release/go/spacemesh/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 const DefaultGRPCServer = "localhost:9092"
@@ -45,7 +45,7 @@ func (c *Client) Connect() error {
 	var err error
 	if !c.secureConnection {
 		// simple grpc dial
-		conn, err = grpc.Dial(c.server, grpc.WithInsecure())
+		conn, err = grpc.Dial(c.server, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else {
 		// secure connection without client cert or server cert validation
 		conn, err = c.dial(c.server)
@@ -64,18 +64,11 @@ func (c *Client) dial(address string) (*grpc.ClientConn, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dialTime)
 	defer cancel()
 
-	var creds credentials.TransportCredentials
-	var err error
-	creds, err = grpcurl.ClientTransportCredentials(false, "", "", "")
-	if err != nil {
-		return nil, err
-	}
-
 	// todo: set release version in user agent
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithUserAgent("sm-cli-wallet/dev-build"))
 
-	cc, err := grpcurl.BlockingDial(ctx, "tcp", address, creds, opts...)
+	cc, err := grpcurl.BlockingDial(ctx, "tcp", address, nil, opts...)
 	if err != nil {
 		return nil, err
 	}

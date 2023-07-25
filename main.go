@@ -46,7 +46,7 @@ func NewEdSignerByPriStr(priStr string) (*signing.EdSigner, error) {
 }
 
 func main() {
-	tttt()
+	// tttt()
 	// justTx()
 	// justTx()
 	// time.Sleep(time.Second * 20)
@@ -61,7 +61,7 @@ func main() {
 	// time.Sleep(2 * time.Second)
 	// justSpawn()
 	// testAcc()
-	// testAcc()
+	testAcc()
 }
 
 func tttt() {
