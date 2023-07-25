@@ -13,9 +13,9 @@ type NodeInfo struct {
 	Version          string
 	Build            string
 	HRP              string
-	FirstGenesis     string
-	EffectiveGenesis string
-	EpochSize        string
+	FirstGenesis     uint32
+	EffectiveGenesis uint32
+	EpochSize        uint32
 	// "hrp": "standalone",
 	// "first_genesis": 19,
 	// "effective_genesis": 19,
@@ -58,7 +58,14 @@ func (c *Client) NodeInfo(ctx context.Context) (*NodeInfo, error) {
 	}
 	info.Build = resp1.BuildString.Value
 
-	s.NodeInfo(ctx, &emptypb.Empty{})
+	resp2, err := s.NodeInfo(ctx, &emptypb.Empty{})
+	if err != nil {
+		return nil, err
+	}
+	info.HRP = resp2.Hrp
+	info.EffectiveGenesis = resp2.EffectiveGenesis
+	info.EpochSize = resp2.EpochSize
+	info.FirstGenesis = resp2.FirstGenesis
 
 	return info, nil
 }
